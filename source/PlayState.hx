@@ -3,9 +3,6 @@
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.text.FlxText;
-import flixel.ui.FlxButton;
-import flixel.util.FlxMath;
 import flixel.util.FlxPoint;
 
 class PlayState extends FlxState

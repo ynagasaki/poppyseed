@@ -2,7 +2,6 @@
 package ;
 
 import flixel.FlxSprite;
-import flixel.FlxG;
 
 class Player extends FlxSprite {
 	public static inline var GRAVITY : Float = 400;
