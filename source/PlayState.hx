@@ -10,6 +10,7 @@ class PlayState extends FlxState
 	var background : FlxSprite;
 	var player : Player;
 	var scheduler : Scheduler;
+	var progressBar : ProgressBar;
 
 	override public function create():Void {
 		super.create();
@@ -24,6 +25,9 @@ class PlayState extends FlxState
 
 		player = new Player();
 		add(player);
+
+		progressBar = new ProgressBar();
+		add(progressBar);
 
 		var startingSequence = new PlayerStateChangeEvent(player, 
 			{
@@ -54,6 +58,8 @@ class PlayState extends FlxState
 		super.destroy();
 	}
 
+	var levelDuration : Float = 60;
+	var elapsed : Float = 0;
 	override public function update():Void {
 		super.update();
 
@@ -65,6 +71,9 @@ class PlayState extends FlxState
 			} else if(FlxG.keys.justReleased.UP) {
 				player.flap(false);
 			}
+
+			elapsed += FlxG.elapsed;
+			progressBar.setProgress(elapsed / levelDuration);
 		}
 	}
 }

@@ -18,7 +18,7 @@ class Player extends FlxSprite {
 		maxVelocity.y = 700;
 		animation.add(ANIM_IDLE,[0],0,false);
 		animation.add(ANIM_FLAP,[0,1],8,true);
-		animation.add(ANIM_FLAP_ONCE,[0,1],8,false);
+		animation.add(ANIM_FLAP_ONCE,[0,1],24,false);
 		scale.x = 1.6;
 		scale.y = 1.6;
 		velocity.x = velocity.y = 0;
