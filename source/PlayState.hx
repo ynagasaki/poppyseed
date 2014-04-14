@@ -11,6 +11,9 @@ class PlayState extends FlxState
 	var player : Player;
 	var scheduler : Scheduler;
 	var progressBar : ProgressBar;
+	var level : Level;
+
+	var speed : Float = 110; // pixels per sec
 
 	override public function create():Void {
 		super.create();
@@ -52,14 +55,21 @@ class PlayState extends FlxState
 		);
 
 		scheduler.addEvent(startingSequence);
+
+		level = new Level();
+		level.add(new FoodItem(FlxG.width + 100, 52));
+		level.add(new FoodItem(FlxG.width + 300, 252));
+		level.add(new FoodItem(FlxG.width + 500, 132));
+		level.add(new FoodItem(FlxG.width + 700, 82));
+		level.add(new FoodItem(FlxG.width + 800, 112));
+		level.add(new FoodItem(FlxG.width + 1000, 182));
+		add(level);
 	}
 	
 	override public function destroy():Void {
 		super.destroy();
 	}
 
-	var levelDuration : Float = 60;
-	var elapsed : Float = 0;
 	override public function update():Void {
 		super.update();
 
@@ -72,8 +82,9 @@ class PlayState extends FlxState
 				player.flap(false);
 			}
 
-			elapsed += FlxG.elapsed;
-			progressBar.setProgress(elapsed / levelDuration);
+			level.moveThroughLevel(speed);
+
+			progressBar.setProgress(level.traveled / level.distance);
 		}
 	}
 }
