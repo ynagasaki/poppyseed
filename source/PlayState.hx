@@ -1,5 +1,6 @@
  package;
 
+import sys.io.File;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -56,14 +57,21 @@ class PlayState extends FlxState
 
 		scheduler.addEvent(startingSequence);
 
-		level = new Level();
-		level.add(new FoodItem(FlxG.width + 100, 52));
-		level.add(new FoodItem(FlxG.width + 300, 252));
-		level.add(new FoodItem(FlxG.width + 500, 132));
-		level.add(new FoodItem(FlxG.width + 700, 82));
-		level.add(new FoodItem(FlxG.width + 800, 112));
-		level.add(new FoodItem(FlxG.width + 1000, 182));
-		add(level);
+		var contents :  String = null;
+
+		try {
+			contents = File.getContent("assets/data/level_0.json");
+		} catch(ex : Dynamic) {
+			trace("** error: File probably not found: " + ex);
+		}
+
+		try {
+			var jsonobj = haxe.Json.parse(contents);
+			level = Level.fromJson(jsonobj);
+			add(level);
+		} catch(ex : Dynamic) {
+			trace("** error: Parsing level json string failed: " + ex);
+		}
 	}
 	
 	override public function destroy():Void {
@@ -84,7 +92,15 @@ class PlayState extends FlxState
 
 			level.moveThroughLevel(speed);
 
+			FlxG.overlap(player, level, collisionCallback);
+
 			progressBar.setProgress(level.traveled / level.distance);
+		}
+	}
+
+	private function collisionCallback(player : Dynamic, item : Dynamic) : Void {
+		if(Type.getClass(item) == FoodItem) {
+			cast(item, FoodItem).kill();
 		}
 	}
 }

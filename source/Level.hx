@@ -18,4 +18,17 @@ class Level extends FlxSpriteGroup {
 		this.x -= distanceTraveled;
 		traveled += distanceTraveled;
 	}
+
+	public static function fromJson(json : Dynamic) : Level {
+		var lvl : Level = new Level();
+		var foods : Array<Dynamic> = json.food;
+
+		lvl.distance = json.distance;
+
+		for(food in foods) {
+			lvl.add(new FoodItem(food.x, food.y));
+		}
+
+		return lvl;
+	}
 }
