@@ -2,7 +2,6 @@
 package ;
 
 import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 
 class Level extends FlxSpriteGroup {
@@ -26,7 +25,7 @@ class Level extends FlxSpriteGroup {
 		lvl.distance = json.distance;
 
 		for(food in foods) {
-			lvl.add(new FoodItem(food.x, food.y));
+			lvl.add(new FoodItem(food.x, food.y, 1.5));
 		}
 
 		return lvl;

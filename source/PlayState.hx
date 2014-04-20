@@ -92,7 +92,9 @@ class PlayState extends FlxState
 
 			level.moveThroughLevel(speed);
 
-			FlxG.overlap(player, level, collisionCallback);
+			if(!player.isFeeding()) {
+				FlxG.overlap(player, level, collisionCallback);
+			}
 
 			progressBar.setProgress(level.traveled / level.distance);
 		}
@@ -100,7 +102,9 @@ class PlayState extends FlxState
 
 	private function collisionCallback(player : Dynamic, item : Dynamic) : Void {
 		if(Type.getClass(item) == FoodItem) {
-			cast(item, FoodItem).kill();
+			var food : FoodItem = cast(item, FoodItem);
+			player.startFeeding(food);
+			food.kill();
 		}
 	}
 }
