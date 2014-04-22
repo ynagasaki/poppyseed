@@ -12,9 +12,8 @@ class PlayState extends FlxState
 	var player : Player;
 	var scheduler : Scheduler;
 	var progressBar : ProgressBar;
+	var consumedItems : ConsumedFoodHud;
 	var level : Level;
-
-	var speed : Float = 110; // pixels per sec
 
 	override public function create():Void {
 		super.create();
@@ -28,10 +27,14 @@ class PlayState extends FlxState
 		add(background);
 
 		player = new Player();
+		player.feedFinishListeners.add(feedFinishCallback);
 		add(player);
 
 		progressBar = new ProgressBar();
 		add(progressBar);
+
+		consumedItems = new ConsumedFoodHud(0, 0);
+		add(consumedItems);
 
 		var startingSequence = new PlayerStateChangeEvent(player, 
 			{
@@ -90,7 +93,7 @@ class PlayState extends FlxState
 				player.flap(false);
 			}
 
-			level.moveThroughLevel(speed);
+			level.moveThroughLevel(player.speed);
 
 			if(!player.isFeeding()) {
 				FlxG.overlap(player, level, collisionCallback);
@@ -100,11 +103,17 @@ class PlayState extends FlxState
 		}
 	}
 
+	private function feedFinishCallback(item : FoodItem, finished : Bool) : Void {
+		item.visible = true;
+		level.remove(item, true);
+		consumedItems.addFoodItem(item);
+	}
+
 	private function collisionCallback(player : Dynamic, item : Dynamic) : Void {
 		if(Type.getClass(item) == FoodItem) {
 			var food : FoodItem = cast(item, FoodItem);
+			food.visible = false;
 			player.startFeeding(food);
-			food.kill();
 		}
 	}
 }

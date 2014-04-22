@@ -25,7 +25,7 @@ class Level extends FlxSpriteGroup {
 		lvl.distance = json.distance;
 
 		for(food in foods) {
-			lvl.add(new FoodItem(food.x, food.y, 1.5));
+			lvl.add(new FoodItem(food.name, food.x, food.y, food.hp));
 		}
 
 		return lvl;

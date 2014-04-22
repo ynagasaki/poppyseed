@@ -10,10 +10,14 @@ class Player extends FlxSprite {
 	public static inline var ANIM_FLAP_ONCE : String = "flap_once";
 	public static inline var ANIM_FLAP : String = "flap";
 
-	private var feedItem : FoodItem;
+	public var speed : Float = 110; // pixels per sec
+	public var feedItem : FoodItem;
+
 	private var gameplayActive : Bool = true;
 	private var currentAnimFlapName : String = ANIM_FLAP_ONCE;
 	private var currentAnimIdleName : String = ANIM_IDLE;
+
+	public var feedFinishListeners : List<FoodItem->Bool->Void>;
 
 	public function new() : Void {
 		super(0, 0);
@@ -25,14 +29,22 @@ class Player extends FlxSprite {
 		animation.add(ANIM_FLAP,[0,1],8,true);
 		animation.add(ANIM_FLAP_ONCE,[0,1],24,false);
 
-		animation.add("corn_" + ANIM_IDLE,[2],0,false);
-		animation.add("corn_" + ANIM_FLAP_ONCE,[2,3],24,false);
+		// fix this
+		animation.add("kernel_" + ANIM_IDLE,[2],0,false);
+		animation.add("kernel_" + ANIM_FLAP_ONCE,[2,3],24,false);
+		animation.add("tomato_" + ANIM_IDLE,[4],0,false);
+		animation.add("tomato_" + ANIM_FLAP_ONCE,[4,5],24,false);
 		
 		velocity.x = velocity.y = 0;
+
+		feedFinishListeners = new List<FoodItem->Bool->Void>();
 	}
 
 	public override function update() : Void {
 		if(isFeeding() && feedItem.suck(FlxG.elapsed)) {
+			for(listener in feedFinishListeners) {
+				listener(feedItem, true);
+			}
 			stopFeeding();
 		}
 		super.update();
