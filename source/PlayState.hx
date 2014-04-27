@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.util.FlxPoint;
+import flixel.text.FlxText;
 
 class PlayState extends FlxState
 {
@@ -14,6 +15,8 @@ class PlayState extends FlxState
 	var progressBar : ProgressBar;
 	var consumedItems : ConsumedFoodHud;
 	var level : Level;
+	var score : Int = 0;
+	var scoreText : FlxText;
 
 	override public function create():Void {
 		super.create();
@@ -75,6 +78,10 @@ class PlayState extends FlxState
 		} catch(ex : Dynamic) {
 			trace("** error: Parsing level json string failed: " + ex);
 		}
+
+		scoreText = new FlxText(0, 0, FlxG.width, Std.string(score));
+		//scoreText.scrollFactor = new FlxPoint(0, 0);
+		add(scoreText);
 	}
 	
 	override public function destroy():Void {
@@ -107,6 +114,17 @@ class PlayState extends FlxState
 		item.visible = true;
 		level.remove(item, true);
 		consumedItems.addFoodItem(item);
+
+		if(consumedItems.full()) {
+			var commonFoodType : String = consumedItems.getCommonFoodType();
+			if(commonFoodType == "") {
+				score += 3;
+			} else {
+				trace("old classic bakers: " + commonFoodType);
+			}
+			scoreText.text = Std.string(score);
+			consumedItems.clearHud();
+		}
 	}
 
 	private function collisionCallback(player : Dynamic, item : Dynamic) : Void {
