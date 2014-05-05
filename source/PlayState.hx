@@ -6,6 +6,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.util.FlxPoint;
 import flixel.text.FlxText;
+import flixel.util.FlxCollision;
 
 class PlayState extends FlxState
 {
@@ -32,9 +33,6 @@ class PlayState extends FlxState
 		player = new Player();
 		player.feedFinishListeners.add(feedFinishCallback);
 		add(player);
-
-		progressBar = new ProgressBar();
-		add(progressBar);
 
 		consumedItems = new ConsumedFoodHud(0, 0);
 		add(consumedItems);
@@ -80,8 +78,13 @@ class PlayState extends FlxState
 		}
 
 		scoreText = new FlxText(0, 0, FlxG.width, Std.string(score));
-		//scoreText.scrollFactor = new FlxPoint(0, 0);
+		scoreText.alignment = "right";
+		scoreText.size = 52;
+		scoreText.setBorderStyle(FlxText.BORDER_OUTLINE, 0xCCCCCC, 2, 0);
 		add(scoreText);
+
+		progressBar = new ProgressBar();
+		add(progressBar);
 	}
 	
 	override public function destroy():Void {
@@ -93,7 +96,7 @@ class PlayState extends FlxState
 
 		scheduler.process();
 
-		if(player.isGameplayActive()) {
+		if(player.alive && player.isGameplayActive()) {
 			if(FlxG.keys.justPressed.UP) {
 				player.flap(true);
 			} else if(FlxG.keys.justReleased.UP) {
@@ -102,8 +105,14 @@ class PlayState extends FlxState
 
 			level.moveThroughLevel(player.speed);
 
-			if(!player.isFeeding()) {
+			/*if(!player.isFeeding()) {
 				FlxG.overlap(player, level, collisionCallback);
+			}*/
+			for(member in level.members) {
+				if(member.x > FlxG.width || member.x < -member.width) continue;
+				if(FlxCollision.pixelPerfectCheck(player, member, 255)) {
+					collisionCallback(player, member);
+				}
 			}
 
 			progressBar.setProgress(level.traveled / level.distance);
@@ -114,11 +123,12 @@ class PlayState extends FlxState
 		item.visible = true;
 		level.remove(item, true);
 		consumedItems.addFoodItem(item);
+		score += 1;
 
 		if(consumedItems.full()) {
 			var commonFoodType : String = consumedItems.getCommonFoodType();
 			if(commonFoodType == "") {
-				score += 3;
+				//score += 3;
 			} else {
 				trace("old classic bakers: " + commonFoodType);
 			}
@@ -129,9 +139,12 @@ class PlayState extends FlxState
 
 	private function collisionCallback(player : Dynamic, item : Dynamic) : Void {
 		if(Type.getClass(item) == FoodItem) {
+			if(this.player.isFeeding()) return;
 			var food : FoodItem = cast(item, FoodItem);
 			food.visible = false;
-			player.startFeeding(food);
+			this.player.startFeeding(food);
+		} else if(Type.getClass(item) == FlxSprite) {
+			player.die();
 		}
 	}
 }

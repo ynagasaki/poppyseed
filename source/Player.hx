@@ -86,4 +86,8 @@ class Player extends FlxSprite {
 	public function isGameplayActive() : Bool { 
 		return gameplayActive;
 	}
+
+	public function die() : Void {
+		this.kill();
+	}
 }
