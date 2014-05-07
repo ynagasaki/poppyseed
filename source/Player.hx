@@ -19,6 +19,8 @@ class Player extends FlxSprite {
 
 	public var feedFinishListeners : List<FoodItem->Bool->Void>;
 
+	public var hitarea : FlxSprite;
+
 	public function new() : Void {
 		super(0, 0);
 		loadGraphic("assets/images/player.png", true, true);
@@ -38,6 +40,16 @@ class Player extends FlxSprite {
 		velocity.x = velocity.y = 0;
 
 		feedFinishListeners = new List<FoodItem->Bool->Void>();
+
+		// hitarea
+		hitarea = new FlxSprite(this.x, this.y);
+		hitarea.loadGraphic("assets/images/player.hitarea.png", false);
+		syncHitArea();
+	}
+
+	public function syncHitArea() : Void {
+		hitarea.x = this.x;
+		hitarea.y = this.y;
 	}
 
 	public override function update() : Void {
@@ -48,6 +60,7 @@ class Player extends FlxSprite {
 			stopFeeding();
 		}
 		super.update();
+		syncHitArea();
 	}
 
 	public function suspendActiveGameplay(suspend : Bool) : Void {
@@ -87,7 +100,8 @@ class Player extends FlxSprite {
 		return gameplayActive;
 	}
 
-	public function die() : Void {
-		this.kill();
+	public override function kill() : Void {
+		hitarea.kill();
+		super.kill();
 	}
 }

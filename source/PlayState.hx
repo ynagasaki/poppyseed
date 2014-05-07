@@ -33,6 +33,7 @@ class PlayState extends FlxState
 		player = new Player();
 		player.feedFinishListeners.add(feedFinishCallback);
 		add(player);
+		//add(player.hitarea);
 
 		consumedItems = new ConsumedFoodHud(0, 0);
 		add(consumedItems);
@@ -109,9 +110,21 @@ class PlayState extends FlxState
 				FlxG.overlap(player, level, collisionCallback);
 			}*/
 			for(member in level.members) {
-				if(member.x > FlxG.width || member.x < -member.width) continue;
-				if(FlxCollision.pixelPerfectCheck(player, member, 255)) {
-					collisionCallback(player, member);
+				if(member.x > FlxG.width || member.x < -member.width) {
+					continue;
+				}
+				
+				var memberClass : Class<Dynamic> = Type.getClass(member);
+				if(memberClass == Player) {
+					continue;
+				} else if(memberClass == FoodItem) {
+					if(FlxCollision.pixelPerfectCheck(player, member, 255)) {
+						collisionCallbackFood(cast(member, FoodItem));
+					}
+				} else {
+					if(FlxCollision.pixelPerfectCheck(player.hitarea, member, 255)) {
+						collisionCallbackObstacle(cast(member, FlxSprite));
+					}
 				}
 			}
 
@@ -137,14 +150,13 @@ class PlayState extends FlxState
 		}
 	}
 
-	private function collisionCallback(player : Dynamic, item : Dynamic) : Void {
-		if(Type.getClass(item) == FoodItem) {
-			if(this.player.isFeeding()) return;
-			var food : FoodItem = cast(item, FoodItem);
-			food.visible = false;
-			this.player.startFeeding(food);
-		} else if(Type.getClass(item) == FlxSprite) {
-			player.die();
-		}
+	private function collisionCallbackFood(food : FoodItem) : Void {
+		if(player.isFeeding()) return;
+		food.visible = false;
+		player.startFeeding(food);
+	}
+
+	private function collisionCallbackObstacle(obstacle : FlxSprite) : Void {
+		player.kill();
 	}
 }
