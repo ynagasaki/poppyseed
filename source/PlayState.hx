@@ -5,7 +5,6 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.util.FlxPoint;
-import flixel.text.FlxText;
 import flixel.util.FlxCollision;
 
 class PlayState extends FlxState
@@ -14,10 +13,9 @@ class PlayState extends FlxState
 	var player : Player;
 	var scheduler : Scheduler;
 	var progressBar : ProgressBar;
-	var consumedItems : ConsumedFoodHud;
 	var level : Level;
-	var score : Int = 0;
-	var scoreText : FlxText;
+
+	var stuff : FlxSprite;
 
 	override public function create():Void {
 		super.create();
@@ -27,21 +25,16 @@ class PlayState extends FlxState
 		scheduler = new Scheduler();
 
 		background = new FlxSprite(0, 0);
-		background.loadGraphic("assets/images/bg.png", false, false, FlxG.width, FlxG.height);
+		background.loadGraphic("assets/images/bg-light.png", false, false, FlxG.width, FlxG.height);
 		add(background);
 
 		player = new Player();
-		player.feedFinishListeners.add(feedFinishCallback);
 		add(player);
-		//add(player.hitarea);
-
-		consumedItems = new ConsumedFoodHud(0, 0);
-		add(consumedItems);
 
 		var startingSequence = new PlayerStateChangeEvent(player, 
 			{
-				x : -player.width*1.6,
-				y : FlxG.height * 0.5 - player.height * 1.6 * 0.5,
+				x : -player.width,
+				y : FlxG.height * 0.5 - player.height * 0.5,
 				anim : Player.ANIM_FLAP,
 				suspend : true
 			}
@@ -78,24 +71,39 @@ class PlayState extends FlxState
 			trace("** error: Parsing level json string failed: " + ex);
 		}
 
-		scoreText = new FlxText(0, 0, FlxG.width, Std.string(score));
-		scoreText.alignment = "right";
-		scoreText.size = 52;
-		scoreText.setBorderStyle(FlxText.BORDER_OUTLINE, 0xCCCCCC, 2, 0);
-		add(scoreText);
-
+		/*
 		progressBar = new ProgressBar();
 		add(progressBar);
+		*/
+
+		// butt stuff
+		stuff = new FlxSprite(1500, 0);
+		stuff.loadGraphic("assets/images/baddie-1.png", true, true);
+		stuff.animation.add("flappio",[0,1],4,true);
+		level.add(stuff);
+		stuff.acceleration.y = Player.GRAVITY*0.5;
+		stuff.maxVelocity.y = 700;
+		stuff.velocity.x = -50;
 	}
 	
 	override public function destroy():Void {
 		super.destroy();
 	}
 
+	var stuffbla : Float = 0;
+
 	override public function update():Void {
 		super.update();
 
 		scheduler.process();
+
+			if(stuffbla >= 0.98) {
+				stuff.velocity.y = -100;
+				stuff.animation.play("flappio");
+				stuffbla = 0;
+			} else {
+				stuffbla += FlxG.elapsed;
+			}
 
 		if(player.alive && player.isGameplayActive()) {
 			if(FlxG.keys.justPressed.UP) {
@@ -106,9 +114,6 @@ class PlayState extends FlxState
 
 			level.moveThroughLevel(player.speed);
 
-			/*if(!player.isFeeding()) {
-				FlxG.overlap(player, level, collisionCallback);
-			}*/
 			for(member in level.members) {
 				if(member.x > FlxG.width || member.x < -member.width) {
 					continue;
@@ -117,9 +122,9 @@ class PlayState extends FlxState
 				var memberClass : Class<Dynamic> = Type.getClass(member);
 				if(memberClass == Player) {
 					continue;
-				} else if(memberClass == FoodItem) {
+				} else if(memberClass == StarCoin) {
 					if(FlxCollision.pixelPerfectCheck(player, member, 255)) {
-						collisionCallbackFood(cast(member, FoodItem));
+						collisionCallbackCoin(cast(member, StarCoin));
 					}
 				} else {
 					if(FlxCollision.pixelPerfectCheck(player.hitarea, member, 255)) {
@@ -128,32 +133,13 @@ class PlayState extends FlxState
 				}
 			}
 
-			progressBar.setProgress(level.traveled / level.distance);
+			//progressBar.setProgress(level.traveled / level.distance);
 		}
+
 	}
 
-	private function feedFinishCallback(item : FoodItem, finished : Bool) : Void {
-		item.visible = true;
-		level.remove(item, true);
-		consumedItems.addFoodItem(item);
-		score += 1;
-
-		if(consumedItems.full()) {
-			var commonFoodType : String = consumedItems.getCommonFoodType();
-			if(commonFoodType == "") {
-				//score += 3;
-			} else {
-				trace("old classic bakers: " + commonFoodType);
-			}
-			scoreText.text = Std.string(score);
-			consumedItems.clearHud();
-		}
-	}
-
-	private function collisionCallbackFood(food : FoodItem) : Void {
-		if(player.isFeeding()) return;
-		food.visible = false;
-		player.startFeeding(food);
+	private function collisionCallbackCoin(coin : StarCoin) : Void {
+		coin.kill();
 	}
 
 	private function collisionCallbackObstacle(obstacle : FlxSprite) : Void {

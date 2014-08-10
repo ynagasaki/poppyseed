@@ -1,6 +1,20 @@
 {
 	"distance":3300,
-	"food": [
+	"starcoins" : [
+		{
+			"x": 1200,
+			"y": 200
+		},
+		{
+			"x": 1275,
+			"y": 200
+		},
+		{
+			"x": 1350,
+			"y": 200
+		}
+	],
+	"<deprecated>food": [
 		{
 			"name": "kernel",
 			"x": 1250,
