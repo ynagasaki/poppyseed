@@ -1,13 +1,16 @@
- package;
+package ;
 
 import sys.io.File;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.FlxState;
 import flixel.util.FlxPoint;
 import flixel.util.FlxCollision;
+import flixel.addons.nape.FlxNapeState;
 
-class PlayState extends FlxState
+import nape.geom.Vec2;
+
+class PlayState extends FlxNapeState
 {
 	var background : FlxSprite;
 	var player : Player;
@@ -25,12 +28,24 @@ class PlayState extends FlxState
 		scheduler = new Scheduler();
 
 		background = new FlxSprite(0, 0);
-		background.loadGraphic("assets/images/bg-light.png", false, false, FlxG.width, FlxG.height);
+		background.loadGraphic("assets/images/bg-light.png", false, FlxG.width, FlxG.height);
 		add(background);
 
+		// initialize physics
+		FlxNapeState.space.gravity = new Vec2(0, Player.GRAVITY);
+
+		// initialize debug
+		#if !FLX_NO_DEBUG
+		FlxG.debugger.visible = true;
+		set_napeDebugEnabled(true);
+		FlxNapeState.debug.thickness = 1.0;
+		#end
+
+		// initialize player
 		player = new Player();
 		add(player);
 
+		// setup starting sequence
 		var startingSequence = new PlayerStateChangeEvent(player, 
 			{
 				x : -player.width,
@@ -39,7 +54,6 @@ class PlayState extends FlxState
 				suspend : true
 			}
 		);
-
 		startingSequence.chain(new SpriteMoveEvent(player, 
 				new FlxPoint(320, 0), 
 				3.0
@@ -52,9 +66,9 @@ class PlayState extends FlxState
 				2.0
 			)
 		);
-
 		scheduler.addEvent(startingSequence);
 
+		// load level
 		var contents :  String = null;
 
 		try {
@@ -126,11 +140,11 @@ class PlayState extends FlxState
 					if(FlxCollision.pixelPerfectCheck(player, member, 255)) {
 						collisionCallbackCoin(cast(member, StarCoin));
 					}
-				} else {
+				} /*else {
 					if(FlxCollision.pixelPerfectCheck(player.hitarea, member, 255)) {
 						collisionCallbackObstacle(cast(member, FlxSprite));
 					}
-				}
+				}*/
 			}
 
 			//progressBar.setProgress(level.traveled / level.distance);
