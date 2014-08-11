@@ -19,6 +19,7 @@ class Player extends FlxSprite {
 	public var speed : Float = 80; // pixels per sec
 	//public var hitarea : FlxSprite;
 
+	private var halfWidth : Float;
 	private var gameplayActive : Bool = true;
 	private var currentAnimFlapName : String = ANIM_FLAP_ONCE;
 	private var currentAnimIdleName : String = ANIM_IDLE;
@@ -35,6 +36,7 @@ class Player extends FlxSprite {
 		maxVelocity.y = MAX_VELOCITY_Y;
 		velocity.x = velocity.y = 0;
 		setPosition(0, FlxG.height * 0.5 - this.height * 0.5);
+		halfWidth = width / 2;
 
 		// setup animation cycles
 		animation.add(ANIM_IDLE,[0],0,false);
@@ -44,8 +46,8 @@ class Player extends FlxSprite {
 		// setup physics
 		physbody = new Body(BodyType.KINEMATIC);
 		physbody.space = flixel.addons.nape.FlxNapeState.space;
-		physbody.shapes.add(new Circle(width / 2));
-		physbody.position.setxy(x + width / 2, y + height / 2);
+		physbody.shapes.add(new Circle(halfWidth - 4));
+		physbody.position.setxy(x + halfWidth, y + halfWidth);
 
 		// hitarea -- TODO: FIX THE HIT AREA
 		//hitarea = new FlxSprite(this.x, this.y);
@@ -60,7 +62,7 @@ class Player extends FlxSprite {
 
 	public override function update() : Void {
 		super.update();
-		physbody.position.setxy(x + width / 2, y + height / 2);
+		physbody.position.setxy(x + halfWidth, y + halfWidth);
 		//syncHitArea();
 	}
 
