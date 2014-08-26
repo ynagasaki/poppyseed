@@ -1,10 +1,10 @@
 #!/bin/bash
-debug = false
+debug=false
 
 if [ $# != 0 ]; then
 	for arg in $@; do
 		if [ arg = "debug" ]; then
-			debug = true
+			debug=true
 		fi
 	done
 fi

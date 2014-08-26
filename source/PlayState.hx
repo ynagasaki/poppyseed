@@ -27,9 +27,25 @@ class PlayState extends FlxNapeState
 
 		scheduler = new Scheduler();
 
-		background = new FlxSprite(0, 0);
-		background.loadGraphic("assets/images/bg-light.png", false, FlxG.width, FlxG.height);
-		add(background);
+		// load level
+		var contents :  String = null;
+
+		try {
+			contents = File.getContent("assets/data/level_0.json");
+		} catch(ex : Dynamic) {
+			trace("** error: File probably not found: " + ex);
+		}
+
+		try {
+			var jsonobj = haxe.Json.parse(contents);
+			level = Level.fromJson(jsonobj);
+			background = new FlxSprite(0, 0);
+			background.loadGraphic(level.background, false, FlxG.width, FlxG.height);
+			add(background);
+			add(level);
+		} catch(ex : Dynamic) {
+			trace("** error: Parsing level json string failed: " + ex);
+		}
 
 		// initialize physics
 		FlxNapeState.space.gravity = new Vec2(0, Player.GRAVITY);
@@ -45,7 +61,7 @@ class PlayState extends FlxNapeState
 		player = new Player();
 		add(player);
 
-		// setup starting sequence
+		/*// setup starting sequence
 		var startingSequence = new PlayerStateChangeEvent(player, 
 			{
 				x : -player.width,
@@ -68,23 +84,6 @@ class PlayState extends FlxNapeState
 		);
 		scheduler.addEvent(startingSequence);
 
-		// load level
-		var contents :  String = null;
-
-		try {
-			contents = File.getContent("assets/data/level_0.json");
-		} catch(ex : Dynamic) {
-			trace("** error: File probably not found: " + ex);
-		}
-
-		try {
-			var jsonobj = haxe.Json.parse(contents);
-			level = Level.fromJson(jsonobj);
-			add(level);
-		} catch(ex : Dynamic) {
-			trace("** error: Parsing level json string failed: " + ex);
-		}
-
 		/*
 		progressBar = new ProgressBar();
 		add(progressBar);
@@ -98,6 +97,11 @@ class PlayState extends FlxNapeState
 		stuff.acceleration.y = Player.GRAVITY*0.5;
 		stuff.maxVelocity.y = 700;
 		stuff.velocity.x = -50;
+
+		// butt stuff 2
+		var jank = new Block(500, 400, 100, 50);
+		level.add(jank);
+		add(jank);
 	}
 	
 	override public function destroy():Void {
@@ -126,7 +130,7 @@ class PlayState extends FlxNapeState
 				player.flap(false);
 			}
 
-			level.moveThroughLevel(player.speed);
+			//level.moveThroughLevel(player.speed);
 
 			for(member in level.members) {
 				if(member.x > FlxG.width || member.x < -member.width) {

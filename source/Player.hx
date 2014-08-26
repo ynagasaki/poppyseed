@@ -3,7 +3,6 @@ package ;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.nape.FlxNapeSprite;
 
 import nape.phys.Body;
 import nape.phys.BodyType;
@@ -16,8 +15,7 @@ class Player extends FlxSprite {
 	public static inline var ANIM_FLAP_ONCE : String = "flap_once";
 	public static inline var ANIM_FLAP : String = "flap";
 
-	public var speed : Float = 80; // pixels per sec
-	//public var hitarea : FlxSprite;
+	public var speed : Float = 50;
 
 	private var halfWidth : Float;
 	private var gameplayActive : Bool = true;
@@ -32,9 +30,9 @@ class Player extends FlxSprite {
 		loadGraphic("assets/images/player-creature.png", true);
 
 		// set up motion constants and initial settings
-		acceleration.y = GRAVITY;
-		maxVelocity.y = MAX_VELOCITY_Y;
-		velocity.x = velocity.y = 0;
+		//acceleration.y = GRAVITY;
+		//maxVelocity.y = MAX_VELOCITY_Y;
+		//velocity.x = velocity.y = 0;
 		setPosition(0, FlxG.height * 0.5 - this.height * 0.5);
 		halfWidth = width / 2;
 
@@ -44,37 +42,32 @@ class Player extends FlxSprite {
 		animation.add(ANIM_FLAP_ONCE,[0,1],24,false);
 
 		// setup physics
-		physbody = new Body(BodyType.KINEMATIC);
+		physbody = new Body(BodyType.DYNAMIC);
 		physbody.space = flixel.addons.nape.FlxNapeState.space;
+		physbody.mass = 10;
+		physbody.allowRotation = false;
 		physbody.shapes.add(new Circle(halfWidth - 4));
 		physbody.position.setxy(x + halfWidth, y + halfWidth);
-
-		// hitarea -- TODO: FIX THE HIT AREA
-		//hitarea = new FlxSprite(this.x, this.y);
-		//hitarea.loadGraphic("assets/images/player.hitarea.png", false);
-		//syncHitArea();
 	}
 
-	//public function syncHitArea() : Void {
-	//	hitarea.x = this.x;
-	//	hitarea.y = this.y;
-	//}
-
 	public override function update() : Void {
+		x = physbody.position.x - halfWidth;
+		y = physbody.position.y - halfWidth;
 		super.update();
-		physbody.position.setxy(x + halfWidth, y + halfWidth);
-		//syncHitArea();
+		//physbody.position.setxy(x + halfWidth, y + halfWidth);
 	}
 
 	public function suspendActiveGameplay(suspend : Bool) : Void {
-		gameplayActive = !suspend;
-		velocity.y = 0;
-		acceleration.y = (suspend) ? 0 : GRAVITY;
+		//gameplayActive = !suspend;
+		//velocity.y = 0;
+		//acceleration.y = (suspend) ? 0 : GRAVITY;
 	}
 
 	public function flap(flap : Bool) : Void {
 		if(flap) {
-			velocity.y = -200;
+			//velocity.y = -200;
+			physbody.velocity.x = 30;
+			physbody.velocity.y = -200;
 			animation.play(currentAnimFlapName);
 		} else {
 			animation.play(currentAnimIdleName);
@@ -86,7 +79,6 @@ class Player extends FlxSprite {
 	}
 
 	public override function kill() : Void {
-		//hitarea.kill();
 		super.kill();
 	}
 }

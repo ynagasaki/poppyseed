@@ -1,5 +1,7 @@
 {
-	"distance":3300,
+	"background" : "assets/images/bg-light.png",
+	"width":3300,
+	"height":640,
 	"starcoins" : [
 		{
 			"x": 1200,
@@ -40,7 +42,7 @@
 			"hp": 3.0
 		}
 	],
-	"obstacles": [
+	"<deprecated>obstacles": [
 		{
 			"name": "thorns",
 			"x": 2000
