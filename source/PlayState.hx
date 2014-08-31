@@ -4,6 +4,7 @@ import sys.io.File;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.util.FlxRect;
 import flixel.util.FlxPoint;
 import flixel.util.FlxCollision;
 import flixel.addons.nape.FlxNapeState;
@@ -60,6 +61,10 @@ class PlayState extends FlxNapeState
 		// initialize player
 		player = new Player();
 		add(player);
+
+		//FlxG.camera.follow(player, flixel.FlxCamera.STYLE_PLATFORMER, new FlxPoint(-FlxG.width + 300, 0), 0.2);
+		FlxG.camera.target = player;
+		FlxG.camera.deadzone = new FlxRect(0,0,300,FlxG.camera.height);
 
 		/*// setup starting sequence
 		var startingSequence = new PlayerStateChangeEvent(player, 
@@ -129,8 +134,6 @@ class PlayState extends FlxNapeState
 			} else if(FlxG.keys.justReleased.UP) {
 				player.flap(false);
 			}
-
-			//level.moveThroughLevel(player.speed);
 
 			for(member in level.members) {
 				if(member.x > FlxG.width || member.x < -member.width) {

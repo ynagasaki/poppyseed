@@ -12,13 +12,13 @@ class Level extends FlxSpriteGroup {
 	public function new() : Void {
 		super();
 	}
-
-	public function moveThroughLevel(speed : Float) : Void {
-		var distanceTraveled : Float = speed * FlxG.elapsed;
+/*
+	public function moveThroughLevel(distanceTraveled : Float) : Void {
+		//var distanceTraveled : Float = speed * FlxG.elapsed;
 		this.x -= distanceTraveled;
 		traveled += distanceTraveled;
 	}
-
+*/
 	public static function fromJson(json : Dynamic) : Level {
 		var lvl : Level = new Level();
 

@@ -44,16 +44,16 @@ class Player extends FlxSprite {
 		// setup physics
 		physbody = new Body(BodyType.DYNAMIC);
 		physbody.space = flixel.addons.nape.FlxNapeState.space;
-		physbody.mass = 10;
-		physbody.allowRotation = false;
+		physbody.mass = 5;
 		physbody.shapes.add(new Circle(halfWidth - 4));
 		physbody.position.setxy(x + halfWidth, y + halfWidth);
+		physbody.velocity.x = speed;
 	}
 
 	public override function update() : Void {
+		super.update();
 		x = physbody.position.x - halfWidth;
 		y = physbody.position.y - halfWidth;
-		super.update();
 		//physbody.position.setxy(x + halfWidth, y + halfWidth);
 	}
 
@@ -66,7 +66,6 @@ class Player extends FlxSprite {
 	public function flap(flap : Bool) : Void {
 		if(flap) {
 			//velocity.y = -200;
-			physbody.velocity.x = 30;
 			physbody.velocity.y = -200;
 			animation.play(currentAnimFlapName);
 		} else {
