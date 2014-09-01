@@ -8,12 +8,12 @@ import flixel.util.FlxRect;
 import flixel.util.FlxPoint;
 import flixel.util.FlxCollision;
 import flixel.addons.nape.FlxNapeState;
+import flixel.addons.display.FlxBackdrop;
 
 import nape.geom.Vec2;
 
 class PlayState extends FlxNapeState
 {
-	var background : FlxSprite;
 	var player : Player;
 	var scheduler : Scheduler;
 	var progressBar : ProgressBar;
@@ -40,9 +40,7 @@ class PlayState extends FlxNapeState
 		try {
 			var jsonobj = haxe.Json.parse(contents);
 			level = Level.fromJson(jsonobj);
-			background = new FlxSprite(0, 0);
-			background.loadGraphic(level.background, false, FlxG.width, FlxG.height);
-			add(background);
+			add(new FlxBackdrop(level.background, 0, 0));
 			add(level);
 		} catch(ex : Dynamic) {
 			trace("** error: Parsing level json string failed: " + ex);
@@ -104,7 +102,7 @@ class PlayState extends FlxNapeState
 		stuff.velocity.x = -50;
 
 		// butt stuff 2
-		var jank = new Block(500, 400, 100, 50);
+		var jank = new Block(500, 400, 20, 200);
 		level.add(jank);
 		add(jank);
 	}

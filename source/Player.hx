@@ -14,8 +14,7 @@ class Player extends FlxSprite {
 	public static inline var ANIM_IDLE : String = "idle";
 	public static inline var ANIM_FLAP_ONCE : String = "flap_once";
 	public static inline var ANIM_FLAP : String = "flap";
-
-	public var speed : Float = 50;
+	public static inline var MAX_SPEED : Float = 70;
 
 	private var halfWidth : Float;
 	private var gameplayActive : Bool = true;
@@ -29,10 +28,7 @@ class Player extends FlxSprite {
 		// load sprite
 		loadGraphic("assets/images/player-creature.png", true);
 
-		// set up motion constants and initial settings
-		//acceleration.y = GRAVITY;
-		//maxVelocity.y = MAX_VELOCITY_Y;
-		//velocity.x = velocity.y = 0;
+		// set up initial settings
 		setPosition(0, FlxG.height * 0.5 - this.height * 0.5);
 		halfWidth = width / 2;
 
@@ -47,14 +43,16 @@ class Player extends FlxSprite {
 		physbody.mass = 5;
 		physbody.shapes.add(new Circle(halfWidth - 4));
 		physbody.position.setxy(x + halfWidth, y + halfWidth);
-		physbody.velocity.x = speed;
+		physbody.velocity.x = MAX_SPEED;
 	}
 
 	public override function update() : Void {
+		if(physbody.velocity.x > MAX_SPEED) {
+			physbody.velocity.x = MAX_SPEED;
+		}
 		super.update();
 		x = physbody.position.x - halfWidth;
 		y = physbody.position.y - halfWidth;
-		//physbody.position.setxy(x + halfWidth, y + halfWidth);
 	}
 
 	public function suspendActiveGameplay(suspend : Bool) : Void {
@@ -65,7 +63,10 @@ class Player extends FlxSprite {
 
 	public function flap(flap : Bool) : Void {
 		if(flap) {
-			//velocity.y = -200;
+			var vx : Float = physbody.velocity.x;
+			if(Math.abs(vx - MAX_SPEED) >= 0.001) {
+				physbody.velocity.x = MAX_SPEED;
+			}
 			physbody.velocity.y = -200;
 			animation.play(currentAnimFlapName);
 		} else {

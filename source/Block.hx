@@ -17,14 +17,13 @@ class Block extends FlxSprite {
 		makeGraphic(width, height, FlxColor.AZURE);
 
 		// setup physics
-		physbody = new Body(BodyType.KINEMATIC);
+		physbody = new Body(BodyType.STATIC);
+		physbody.position.setxy(x + width/2, y + height/2);
 		physbody.shapes.add(new Polygon(Polygon.box(width, height)));
 		physbody.space = flixel.addons.nape.FlxNapeState.space;
-		physbody.position.setxy(x + width/2, y + height/2);
 	}
 
 	public override function update() : Void {
 		super.update();
-		//physbody.position.setxy(x + width/2, y + height/2);
 	}
 }

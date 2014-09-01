@@ -1,10 +1,10 @@
 #!/bin/bash
-debug=false
+debug=0
 
 if [ $# != 0 ]; then
 	for arg in $@; do
 		if [ arg = "debug" ]; then
-			debug=true
+			debug=1
 		fi
 	done
 fi
@@ -14,7 +14,8 @@ python hxlint.py
 
 echo
 echo Building and running...
-if [ debug ]; then
+echo "debug=$debug"
+if [ debug == 1 ]; then
 	lime -debug test neko
 else
 	lime test neko
